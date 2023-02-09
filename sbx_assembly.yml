@@ -1,0 +1,6 @@
+name: sbx_assembly
+channels:
+  - bioconda
+dependencies:
+  - megahit
+  - prodigal
