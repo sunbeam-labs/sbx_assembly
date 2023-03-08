@@ -17,6 +17,8 @@ def setup():
 
     sp.check_output(["sunbeam", "init", "--data_fp", reads_fp, project_dir])
 
+    config_fp = os.path.join(project_dir, "sunbeam_config.yml")
+
     config_str = f"qc: {{host_fp: {hosts_fp}}}"
     sp.check_output(
         [
