@@ -11,10 +11,24 @@ def setup():
     temp_dir = tempfile.mkdtemp()
 
     reads_fp = os.path.abspath(".tests/data/reads/")
+    hosts_fp = os.path.abspath(".tests/data/hosts/")
 
     project_dir = os.path.join(temp_dir, "project/")
 
     sp.check_output(["sunbeam", "init", "--data_fp", reads_fp, project_dir])
+
+    config_str = f"qc: {{host_fp: {hosts_fp}}}"
+    sp.check_output(
+        [
+            "sunbeam",
+            "config",
+            "modify",
+            "-i",
+            "-s",
+            f"{config_str}",
+            f"{config_fp}",
+        ]
+    )
 
     yield temp_dir, project_dir
 
