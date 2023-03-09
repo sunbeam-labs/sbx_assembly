@@ -5,16 +5,6 @@
 #
 # See Readme.md
 
-
-TARGET_ANNOTATION = [
-    expand(
-        ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_{suffix}.fa",
-        sample=Samples.keys(),
-        suffix=["prot", "nucl"],
-    )
-]
-
-
 try:
     BENCHMARK_FP
 except NameError:
@@ -23,11 +13,6 @@ try:
     LOG_FP
 except NameError:
     LOG_FP = output_subdir(Cfg, "logs")
-
-
-rule all_annotation:
-    input:
-        TARGET_ANNOTATION,
 
 
 rule prodigal:

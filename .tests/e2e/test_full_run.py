@@ -66,15 +66,18 @@ def run_sunbeam(setup):
     shutil.copytree(os.path.join(output_fp, "logs/"), "logs/")
     shutil.copytree(os.path.join(project_dir, "stats/"), "stats/")
 
-    all_samples_fp = os.path.join(output_fp, "classify/kraken/all_samples.tsv")
+    final_contigs_fp = os.path.join(output_fp, "assembly/contigs/TEST-contigs.fa")
+    genes_fp = os.path.join(output_fp, "annotation/genes/prodigal")
 
     benchmarks_fp = os.path.join(project_dir, "stats/")
 
-    yield all_samples_fp, benchmarks_fp
+    yield final_contigs_fp, genes_fp, benchmarks_fp
 
 
 def test_full_run(run_sunbeam):
-    all_samples_fp, benchmarks_fp = run_sunbeam
+    final_contigs_fp, genes_fp, benchmarks_fp = run_sunbeam
 
     # Check output
-    assert os.path.exists(all_samples_fp)
+    assert os.path.exists(final_contigs_fp)
+    for ext in ["_nucl.fa", "_prot.fa", ".gff"]:
+        assert os.path.exists(f"{genes_fp}TEST_genes{ext}")

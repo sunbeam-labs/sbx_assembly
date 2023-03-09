@@ -6,7 +6,12 @@
 
 
 TARGET_ASSEMBLY = [
-    expand(ASSEMBLY_FP / "contigs" / "{sample}-contigs.fa", sample=Samples.keys())
+    expand(ASSEMBLY_FP / "contigs" / "{sample}-contigs.fa", sample=Samples.keys()),
+    expand(
+        ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_{suffix}.fa",
+        sample=Samples.keys(),
+        suffix=["prot", "nucl"],
+    )
 ]
 
 
@@ -114,7 +119,7 @@ rule final_filter:
     params:
         len=Cfg["sbx_assembly"]["min_length"],
     script:
-        "../scripts/final_filter.py"
+        "scripts/final_filter.py"
 
 
 rule clean_assembly:
