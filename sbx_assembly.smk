@@ -11,7 +11,7 @@ TARGET_ASSEMBLY = [
         ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_{suffix}.fa",
         sample=Samples.keys(),
         suffix=["prot", "nucl"],
-    )
+    ),
 ]
 
 
