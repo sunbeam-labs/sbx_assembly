@@ -80,4 +80,4 @@ def test_full_run(run_sunbeam):
     # Check output
     assert os.path.exists(final_contigs_fp)
     for ext in ["_nucl.fa", "_prot.fa", ".gff"]:
-        assert os.path.exists(f"{genes_fp}TEST_genes{ext}")
+        assert os.path.exists(os.path.join(genes_fp, f"TEST_genes{ext}"))
