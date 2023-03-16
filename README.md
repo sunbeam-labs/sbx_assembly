@@ -7,7 +7,7 @@
 [![Super-Linter](https://github.com/sunbeam-labs/sbx_assembly/actions/workflows/linter.yml/badge.svg)](https://github.com/sunbeam-labs/sbx_assembly/actions/workflows/linter.yml)
 <!-- End badges -->
 
-A [Sunbeam](https://github.com/sunbeam-labs/sunbeam) extension for assembly of contigs using Megahit and annotation using Prodigal.
+A [Sunbeam](https://github.com/sunbeam-labs/sunbeam) extension for assembly of contigs using Megahit, annotation using Prodigal, and annotation using [Blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi) and [Diamond](https://github.com/bbuchfink/diamond).
 
 ## Installation
 
@@ -28,6 +28,10 @@ N.B. For sunbeam versions <4 the last command will be something like `sunbeam ru
 ## Configuration
 
   - min_length: Is the minimum contig length to accept in the final filtering
+  - threads: Is the number of threads to use running blast/diamond
+  - circular_kmin: Is the minimum length of overlap to check for circular contigs with
+  - circular_kmax: Is the maximum length of overlap to check for circular contigs with
+  - circular_min_len: Is the minimum sequence length to consider checking for circularity
 
 ## Legacy Installation
 

@@ -66,18 +66,27 @@ def run_sunbeam(setup):
     shutil.copytree(os.path.join(output_fp, "logs/"), "logs/")
     shutil.copytree(os.path.join(project_dir, "stats/"), "stats/")
 
+    benchmarks_fp = os.path.join(project_dir, "stats/")
+
+    yield output_fp, benchmarks_fp
+
+
+def test_full_run_assembly(run_sunbeam):
+    output_fp, benchmarks_fp = run_sunbeam
+
     final_contigs_fp = os.path.join(output_fp, "assembly/contigs/TEST-contigs.fa")
     genes_fp = os.path.join(output_fp, "annotation/genes/prodigal")
 
-    benchmarks_fp = os.path.join(project_dir, "stats/")
-
-    yield final_contigs_fp, genes_fp, benchmarks_fp
-
-
-def test_full_run(run_sunbeam):
-    final_contigs_fp, genes_fp, benchmarks_fp = run_sunbeam
-
     # Check output
     assert os.path.exists(final_contigs_fp)
+    assert os.stat(final_contigs_fp).st_size > 0
     for ext in ["_nucl.fa", "_prot.fa", ".gff"]:
         assert os.path.exists(os.path.join(genes_fp, f"TEST_genes{ext}"))
+
+def test_full_run_annotation(run_sunbeam):
+    output_fp, benchmarks_fp = run_sunbeam
+
+    # Check output
+    all_samples_fp = os.path.join(output_fp, "annotation/all_samples.tsv")
+    assert os.path.exists(all_samples_fp)
+    assert os.stat(all_samples_fp).st_size > 0

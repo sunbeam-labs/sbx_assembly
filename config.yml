@@ -1,2 +1,7 @@
 sbx_assembly:
   min_length: 300
+sbx_annotation:
+  threads: 4
+  circular_kmin: 10
+  circular_kmax: 1000
+  circular_min_len: 3500

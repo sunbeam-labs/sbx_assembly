@@ -58,6 +58,7 @@ rule megahit_paired:
         exitcode=0
         if [ -d {params.out_fp} ]
         then
+            echo "Clearing previous megahit directory..." > {log}
             rm -rf {params.out_fp}
         fi
         megahit -t {threads} -1 {input.r1} -2 {input.r2} -o {params.out_fp} --continue 2>&1 {log} || exitcode=$?
@@ -65,10 +66,10 @@ rule megahit_paired:
         if [ $exitcode -eq 255 ]
         then
             touch {output}
-            echo "Empty contigs"
+            echo "Empty contigs" 2>&1 | tee {log}
         elif [ $exitcode -gt 1 ]
         then
-            echo "Check your memory"
+            echo "Check your memory" 2>&1 | tee {log}
         fi
         """
 
@@ -129,3 +130,39 @@ rule clean_assembly:
         """
         rm -rf {input.M} && echo "Cleanup assembly finished."
         """
+
+
+rule prodigal:
+    """Use Progial for coding genes predictions in contigs."""
+    input:
+        ASSEMBLY_FP / "contigs" / "{sample}-contigs.fa",
+    output:
+        gff=ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes.gff",
+        faa=ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_prot.fa",
+        fna=ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_nucl.fa",
+    benchmark:
+        BENCHMARK_FP / "prodigal_{sample}.tsv"
+    log:
+        LOG_FP / "prodigal_{sample}.log",
+    conda:
+        "sbx_assembly.yml"
+    shell:
+        """
+        if [[ -s {input} ]]; then
+          prodigal -i {input} -o {output.gff} \
+          -a {output.faa} -d {output.fna} -p meta 2>&1 | tee {log}
+        else
+          touch {output.faa}
+          touch {output.gff}
+          touch {output.fna}
+        fi
+        """
+
+
+rule _test_prodigal:
+    input:
+        expand(
+            ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_{suffix}.fa",
+            sample=Samples.keys(),
+            suffix=["prot", "nucl"],
+        ),

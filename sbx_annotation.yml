@@ -1,0 +1,8 @@
+name: sbx_annotation
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - blast
+  - diamond>=2
+  - python>3
