@@ -63,8 +63,11 @@ def run_sunbeam(setup):
         shutil.copytree(os.path.join(project_dir, "stats/"), "stats/")
         sys.exit(e)
 
-    shutil.copytree(os.path.join(output_fp, "logs/"), "logs/")
-    shutil.copytree(os.path.join(project_dir, "stats/"), "stats/")
+    try:
+        shutil.copytree(os.path.join(output_fp, "logs/"), "logs/")
+        shutil.copytree(os.path.join(project_dir, "stats/"), "stats/")
+    except FileExistsError:
+        pass
 
     benchmarks_fp = os.path.join(project_dir, "stats/")
 
