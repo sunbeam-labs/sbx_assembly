@@ -53,7 +53,9 @@ def run_sunbeam(setup):
                 "conda",
                 "--profile",
                 project_dir,
+                "--target_list",
                 "all_assembly",
+                "all_annotate",
                 "--directory",
                 temp_dir,
             ]

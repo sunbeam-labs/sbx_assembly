@@ -21,7 +21,7 @@ To install, activate your conda environment (using the name of your environment)
 To generate contigs and annotations, create a project and use the `all_assembly` and `all_annotation` targets:
 
     sunbeam init --data_fp /path/to/reads/ /path/to/project/
-    sunbeam run --profile /path/to/project/ --target_list all_assembly all_annotation
+    sunbeam run --profile /path/to/project/ --target_list all_assembly all_annotate
 
 N.B. For sunbeam versions <4 the last command will be something like `sunbeam run --configfile /path/to/project/sunbeam_config.yml all_assembly` and `sunbeam run --configfile /path/to/project/sunbeam_config.yml all_annotation`.
 
