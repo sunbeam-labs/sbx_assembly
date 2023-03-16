@@ -32,7 +32,6 @@ def blast_hits(blast_files):
     return Counter(c["query"] for c in blast_summary(blast_files))
 
 
-
 with open(snakemake.log[0], "w") as log:
     log.write("Starting aggregation...\n")
     with open(snakemake.input.contigs) as f:

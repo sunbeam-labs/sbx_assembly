@@ -83,6 +83,7 @@ def test_full_run_assembly(run_sunbeam):
     for ext in ["_nucl.fa", "_prot.fa", ".gff"]:
         assert os.path.exists(os.path.join(genes_fp, f"TEST_genes{ext}"))
 
+
 def test_full_run_annotation(run_sunbeam):
     output_fp, benchmarks_fp = run_sunbeam
 
