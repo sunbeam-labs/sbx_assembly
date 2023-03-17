@@ -102,6 +102,7 @@ def test_full_run_annotation(run_sunbeam):
     assert os.path.exists(all_samples_fp)
     assert os.stat(all_samples_fp).st_size > 0
 
+
 def test_full_run_coverage(run_sunbeam):
     output_fp, benchmarks_fp = run_sunbeam
 
