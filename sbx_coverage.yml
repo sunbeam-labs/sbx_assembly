@@ -1,0 +1,8 @@
+name: sbx_coverage
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - minimap2
+  - numpy
+  - python>3

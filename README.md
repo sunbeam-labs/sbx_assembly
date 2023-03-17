@@ -7,7 +7,7 @@
 [![Super-Linter](https://github.com/sunbeam-labs/sbx_assembly/actions/workflows/linter.yml/badge.svg)](https://github.com/sunbeam-labs/sbx_assembly/actions/workflows/linter.yml)
 <!-- End badges -->
 
-A [Sunbeam](https://github.com/sunbeam-labs/sunbeam) extension for assembly of contigs using Megahit, annotation using Prodigal, and annotation using [Blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi) and [Diamond](https://github.com/bbuchfink/diamond).
+A [Sunbeam](https://github.com/sunbeam-labs/sunbeam) extension for assembly of contigs using Megahit, gene annotation using Prodigal, and annotation using [Blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi) and [Diamond](https://github.com/bbuchfink/diamond). It can also map reads to contigs and calculat per-base coverage using [Minimap2](https://github.com/lh3/minimap2) and [samtools](https://github.com/samtools/samtools).
 
 ## Installation
 
@@ -18,7 +18,7 @@ To install, activate your conda environment (using the name of your environment)
 
 ## Usage
 
-To generate contigs and annotations, create a project and use the `all_assembly` and `all_annotation` targets:
+To generate contigs, annotations and coverage, create a project and use the `all_assembly`, `all_annotation`, and `all_coverage` targets:
 
     sunbeam init --data_fp /path/to/reads/ /path/to/project/
     sunbeam run --profile /path/to/project/ --target_list all_assembly all_annotate
@@ -27,11 +27,15 @@ N.B. For sunbeam versions <4 the last command will be something like `sunbeam ru
 
 ## Configuration
 
+Assembly
   - min_length: Is the minimum contig length to accept in the final filtering
+Annotation
   - threads: Is the number of threads to use running blast/diamond
   - circular_kmin: Is the minimum length of overlap to check for circular contigs with
   - circular_kmax: Is the maximum length of overlap to check for circular contigs with
   - circular_min_len: Is the minimum sequence length to consider checking for circularity
+Coverage
+  - threads: Is the number of threads to use while running `minimap2` and `samtools sort`
 
 ## Legacy Installation
 

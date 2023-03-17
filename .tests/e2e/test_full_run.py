@@ -56,6 +56,7 @@ def run_sunbeam(setup):
                 "--target_list",
                 "all_assembly",
                 "all_annotate",
+                "all_coverage",
                 "--directory",
                 temp_dir,
             ]
@@ -92,7 +93,18 @@ def test_full_run_assembly(run_sunbeam):
 def test_full_run_annotation(run_sunbeam):
     output_fp, benchmarks_fp = run_sunbeam
 
-    # Check output
     all_samples_fp = os.path.join(output_fp, "annotation/all_samples.tsv")
+
+    # Check output
     assert os.path.exists(all_samples_fp)
     assert os.stat(all_samples_fp).st_size > 0
+
+def test_full_run_coverage(run_sunbeam):
+    output_fp, benchmarks_fp = run_sunbeam
+
+    contigs_coverage_fp = os.path.join(output_fp, "assembly/contigs_coverage.txt")
+
+    # Check output
+    assert os.path.exists(contigs_coverage_fp)
+    with open(contigs_coverage_fp) as f:
+        assert f.readlines() == ""
