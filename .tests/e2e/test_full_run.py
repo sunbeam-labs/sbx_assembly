@@ -80,12 +80,15 @@ def run_sunbeam(setup):
 def test_full_run_assembly(run_sunbeam):
     output_fp, benchmarks_fp = run_sunbeam
 
-    final_contigs_fp = os.path.join(output_fp, "assembly/contigs/TEST-contigs.fa")
+    lfinal_contigs_fp = os.path.join(output_fp, "assembly/contigs/LONG-contigs.fa")
+    sfinal_contigs_fp = os.path.join(output_fp, "assembly/contigs/SHORT-contigs.fa")
     genes_fp = os.path.join(output_fp, "annotation/genes/prodigal")
 
     # Check output
-    assert os.path.exists(final_contigs_fp)
-    assert os.stat(final_contigs_fp).st_size > 0
+    assert os.path.exists(lfinal_contigs_fp)
+    assert os.stat(lfinal_contigs_fp).st_size > 0
+    assert os.path.exists(sfinal_contigs_fp)
+    assert os.stat(sfinal_contigs_fp).st_size > 0
     for ext in ["_nucl.fa", "_prot.fa", ".gff"]:
         assert os.path.exists(os.path.join(genes_fp, f"TEST_genes{ext}"))
 
