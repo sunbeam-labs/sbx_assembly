@@ -6,7 +6,6 @@ import csv
 import numpy
 from io import TextIOWrapper
 
-
 def parse_depth(f: TextIOWrapper) -> dict:
     reader = csv.reader(f, delimiter="\t")
     data = {}
@@ -14,6 +13,7 @@ def parse_depth(f: TextIOWrapper) -> dict:
         if not data.get(row[0]):
             data[row[0]] = []
         data[row[0]].append(int(row[2]))
+    log.write(str(data))
     return data
 
 
@@ -68,5 +68,6 @@ input_fp = snakemake.input[0]
 sample = snakemake.wildcards.sample
 output_fp = snakemake.output[0]
 
-with open(input_fp) as f, open(output_fp, "w") as g:
+with open(input_fp) as f, open(output_fp, "w") as g, open(snakemake.log[0], "w") as log:
+    log.write("Starting coverage calculations...\n")
     write_csv(g, get_cov_stats(parse_depth(f), sample))

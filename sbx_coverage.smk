@@ -50,7 +50,7 @@ rule minimap_alignment:
         "sbx_coverage.yml"
     shell:
         """
-        minimap2 -ax sr -t {threads} {input.contig} {input.reads} > {output} 
+        minimap2 -ax sr -t {threads} {input.contig} {input.reads} 1> {output} 2> {log}
         """
 
 
@@ -58,57 +58,35 @@ rule contigs_sort:
     input:
         ASSEMBLY_FP / "contigs" / "minimap2" / "{sample}.sam",
     output:
-        ASSEMBLY_FP / "contigs" / "samtools" / "{sample}.sorted.sam",
+        ASSEMBLY_FP / "contigs" / "samtools" / "{sample}.sorted.bam",
     benchmark:
         BENCHMARK_FP / "contigs_sort_{sample}.tsv"
     log:
         LOG_FP / "contigs_sort_{sample}.log",
     threads: Cfg["sbx_coverage"]["threads"]
-    # conda:
-    #    "sbx_coverage.yml"
-    wrapper:
-        "v1.23.5/bio/samtools/sort"
-
-
-# shell:
-#    """
-#    samtools sort -@ {threads} -o {output.bam} {input} 2>&1 | tee {log}
-#    samtools index {output.bam} {output.bai} 2>&1 | tee {log}
-#    """
-
-
-rule contigs_index:
-    input:
-        ASSEMBLY_FP / "contigs" / "samtools" / "{sample}.sorted.sam",
-    output:
-        ASSEMBLY_FP / "contigs" / "samtools" / "{sample}.sorted.sam.bai",
-    benchmark:
-        BENCHMARK_FP / "contigs_index_{sample}.tsv"
-    log:
-        LOG_FP / "contigs_index_{sample}.log",
-    wrapper:
-        "v1.23.5/bio/samtools/index"
+    conda:
+        "sbx_coverage.yml"
+    shell:
+        """
+        samtools sort -@ {threads} -o {output} {input} 2>&1 | tee {log}
+        """
 
 
 rule mapping_depth:
     input:
-        ASSEMBLY_FP / "contigs" / "samtools" / "{sample}.sorted.sam",
+        ASSEMBLY_FP / "contigs" / "samtools" / "{sample}.sorted.bam",
     output:
         ASSEMBLY_FP / "contigs" / "coverage" / "{sample}.depth",
     benchmark:
         BENCHMARK_FP / "mapping_depth_{sample}.tsv"
     log:
         LOG_FP / "mapping_depth_{sample}.log",
-    # conda:
-    #    "sbx_coverage.yml"
-    wrapper:
-        "v1.23.5/bio/samtools/depth"
-
-
-# shell:
-#    """
-#    samtools depth -aa {input.bam} -o {output.depth} 2>&1 | tee {log}
-#    """
+    conda:
+        "sbx_coverage.yml"
+    shell:
+        """
+        samtools depth -aa {input} 1> {output} 2> {log}
+        """
 
 
 rule get_coverage:
@@ -123,7 +101,7 @@ rule get_coverage:
     conda:
         "sbx_coverage.yml"
     script:
-        "scripts/assembly/get_coverage.py"
+        "scripts/get_coverage.py"
 
 
 rule summarize_coverage:
