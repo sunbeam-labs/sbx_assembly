@@ -6,6 +6,7 @@ import csv
 import numpy
 from io import TextIOWrapper
 
+
 def parse_depth(f: TextIOWrapper) -> dict:
     reader = csv.reader(f, delimiter="\t")
     data = {}

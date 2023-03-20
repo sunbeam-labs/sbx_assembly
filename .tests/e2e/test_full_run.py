@@ -100,8 +100,12 @@ def test_full_run_annotation(run_sunbeam):
     blastn_fp = os.path.join(output_fp, "annotation/blastn/bacteria/contig/LONG.btf")
     blastp_fp = os.path.join(output_fp, "annotation/blastp/prot/prodigal/LONG.btf")
     blastx_fp = os.path.join(output_fp, "annotation/blastx/prot/prodigal/LONG.btf")
-    genes_nucl_fp = os.path.join(output_fp, "annotation/genes/prodigal/LONG_genes_nucl.fa")
-    genes_prot_fp = os.path.join(output_fp, "annotation/genes/prodigal/LONG_genes_prot.fa")
+    genes_nucl_fp = os.path.join(
+        output_fp, "annotation/genes/prodigal/LONG_genes_nucl.fa"
+    )
+    genes_prot_fp = os.path.join(
+        output_fp, "annotation/genes/prodigal/LONG_genes_prot.fa"
+    )
 
     # Check output
     assert os.path.exists(all_samples_fp)
@@ -126,5 +130,5 @@ def test_full_run_coverage(run_sunbeam):
     # Check output
     assert os.path.exists(contigs_coverage_fp)
     with open(contigs_coverage_fp) as f:
-        f.readline() # Headers
-        assert f.readline().strip() != "" # Make sure there's something here
+        f.readline()  # Headers
+        assert f.readline().strip() != ""  # Make sure there's something here
