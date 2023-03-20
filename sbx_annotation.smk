@@ -94,8 +94,7 @@ rule run_diamond_blastp:
     """Run diamond blastp on translated genes against a target db and write to blast tabular format."""
     input:
         genes=ANNOTATION_FP / "genes" / "{orf_finder}" / "{sample}_genes_prot.fa",
-        db=lambda wildcard: Blastdbs["prot"][wildcard.db],
-        indeces=rules.build_diamond_db.output,
+        indexes=rules.build_diamond_db.output,
     output:
         ANNOTATION_FP / "blastp" / "{db}" / "{orf_finder}" / "{sample}.btf",
     benchmark:
@@ -107,16 +106,20 @@ rule run_diamond_blastp:
         "sbx_annotation.yml"
     shell:
         """
-        diamond blastp \
-        -q {input.genes} \
-        --db {input.db} \
-        --outfmt 6 \
-        --threads {threads} \
-        --evalue 1e-10 \
-        --max-target-seqs 2475 \
-        --out {output} \
-        2>&1 | tee {log} \
-        || if [ $? == 1 ]; then echo "Caught empty query error from diamond" >> {log} && touch {output}; fi
+        if [ -s {input.genes} ]; then
+            diamond blastp \
+            -q {input.genes} \
+            --db {input.indexes} \
+            --outfmt 6 \
+            --threads {threads} \
+            --evalue 1e-10 \
+            --max-target-seqs 2475 \
+            --out {output} \
+            2>&1 | tee {log}
+        else
+            echo "Caught empty query" >> {log}
+            touch {output}
+        fi
         """
 
 
@@ -124,8 +127,7 @@ rule run_diamond_blastx:
     """Run diamond blastx on untranslated genes against a target db and write to blast tabular format."""
     input:
         genes=ANNOTATION_FP / "genes" / "{orf_finder}" / "{sample}_genes_nucl.fa",
-        db=lambda wildcard: Blastdbs["prot"][wildcard.db],
-        indeces=rules.build_diamond_db.output,
+        indexes=rules.build_diamond_db.output,
     output:
         ANNOTATION_FP / "blastx" / "{db}" / "{orf_finder}" / "{sample}.btf",
     benchmark:
@@ -137,16 +139,20 @@ rule run_diamond_blastx:
         "sbx_annotation.yml"
     shell:
         """
-        diamond blastx \
-        -q {input.genes} \
-        --db {input.db} \
-        --outfmt 6 \
-        --threads {threads} \
-        --evalue 1e-10 \
-        --max-target-seqs 2475 \
-        --out {output} \
-        2>&1 | tee {log} \
-        || if [ $? == 1 ]; then echo "Caught empty query error from diamond" >> {log} && touch {output}; fi
+        if [ -s {input.genes} ]; then
+            diamond blastx \
+            -q {input.genes} \
+            --db {input.indexes} \
+            --outfmt 6 \
+            --threads {threads} \
+            --evalue 1e-10 \
+            --max-target-seqs 2475 \
+            --out {output} \
+            2>&1 | tee {log}
+        else
+            echo "Caught empty query" >> {log}
+            touch {output}
+        fi
         """
 
 

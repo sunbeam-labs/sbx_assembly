@@ -50,7 +50,7 @@ rule minimap_alignment:
         "sbx_coverage.yml"
     shell:
         """
-        minimap2 -ax sr -t {threads} {input.contig} {input.reads} > {output} 2>&1 | tee {log}
+        minimap2 -ax sr -t {threads} {input.contig} {input.reads} > {output} 
         """
 
 
