@@ -104,12 +104,12 @@ def test_full_run_annotation(run_sunbeam):
     # Check output
     assert os.path.exists(all_samples_fp)
     assert os.stat(all_samples_fp).st_size > 0
-    #assert os.path.exists(blastn_fp)
-    #assert os.stat(blastn_fp).st_size > 0
-    #assert os.path.exists(blastp_fp)
-    #assert os.stat(blastp_fp).st_size > 0
-    #assert os.path.exists(blastx_fp)
-    #assert os.stat(blastx_fp).st_size > 0
+    # assert os.path.exists(blastn_fp)
+    # assert os.stat(blastn_fp).st_size > 0
+    # assert os.path.exists(blastp_fp)
+    # assert os.stat(blastp_fp).st_size > 0
+    # assert os.path.exists(blastx_fp)
+    # assert os.stat(blastx_fp).st_size > 0
 
 
 def test_full_run_coverage(run_sunbeam):
