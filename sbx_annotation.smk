@@ -54,7 +54,7 @@ rule build_diamond_db:
     log:
         LOG_FP / "build_diamond_db.log",
     conda:
-        "sbx_annotation.yml"
+        "envs/sbx_annotation.yml"
     shell:
         """
         diamond makedb --in {input} -d {input} 2>&1 | tee {log}
@@ -75,7 +75,7 @@ rule run_blastn:
         db=lambda wildcard: Blastdbs["nucl"][wildcard.db],
     threads: Cfg["sbx_annotation"]["threads"]
     conda:
-        "sbx_annotation.yml"
+        "envs/sbx_annotation.yml"
     shell:
         """
         blastn \
@@ -103,7 +103,7 @@ rule run_diamond_blastp:
         LOG_FP / "run_diamond_blastp_{db}_{orf_finder}_{sample}.log",
     threads: Cfg["sbx_annotation"]["threads"]
     conda:
-        "sbx_annotation.yml"
+        "envs/sbx_annotation.yml"
     shell:
         """
         if [ -s {input.genes} ]; then
@@ -136,7 +136,7 @@ rule run_diamond_blastx:
         LOG_FP / "run_diamond_blastx_{db}_{orf_finder}_{sample}.log",
     threads: Cfg["sbx_annotation"]["threads"]
     conda:
-        "sbx_annotation.yml"
+        "envs/sbx_annotation.yml"
     shell:
         """
         if [ -s {input.genes} ]; then
@@ -166,7 +166,7 @@ rule blast_report:
     output:
         ANNOTATION_FP / "{blast_prog}" / "{db}" / "{query}" / "report.tsv",
     conda:
-        "sbx_annotation.yml"
+        "envs/sbx_annotation.yml"
     script:
         "scripts/blast_report.py"
 
@@ -212,7 +212,7 @@ rule aggregate_results:
         nucl=Blastdbs["nucl"],
         prot=Blastdbs["prot"],
     conda:
-        "sbx_annotation.yml"
+        "envs/sbx_annotation.yml"
     script:
         "scripts/aggregate_results.py"
 
