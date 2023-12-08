@@ -47,7 +47,7 @@ rule minimap_alignment:
         LOG_FP / "minimap_alignment_{sample}.log",
     threads: Cfg["sbx_coverage"]["threads"]
     conda:
-        "sbx_coverage.yml"
+        "envs/sbx_coverage.yml"
     shell:
         """
         minimap2 -ax sr -t {threads} {input.contig} {input.reads} 1> {output} 2> {log}
@@ -65,7 +65,7 @@ rule contigs_sort:
         LOG_FP / "contigs_sort_{sample}.log",
     threads: Cfg["sbx_coverage"]["threads"]
     conda:
-        "sbx_coverage.yml"
+        "envs/sbx_coverage.yml"
     shell:
         """
         samtools sort -@ {threads} -o {output} {input} 2>&1 | tee {log}
@@ -82,7 +82,7 @@ rule mapping_depth:
     log:
         LOG_FP / "mapping_depth_{sample}.log",
     conda:
-        "sbx_coverage.yml"
+        "envs/sbx_coverage.yml"
     shell:
         """
         samtools depth -aa {input} 1> {output} 2> {log}
@@ -99,7 +99,7 @@ rule get_coverage:
     log:
         LOG_FP / "get_coverage_{sample}.log",
     conda:
-        "sbx_coverage.yml"
+        "envs/sbx_coverage.yml"
     script:
         "scripts/get_coverage.py"
 

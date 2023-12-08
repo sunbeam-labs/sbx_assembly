@@ -48,7 +48,7 @@ rule megahit_paired:
         out_fp=str(ASSEMBLY_FP / "megahit" / "{sample}_asm"),
     threads: 4
     conda:
-        "sbx_assembly.yml"
+        "envs/sbx_assembly.yml"
     shell:
         """
         ## turn off bash strict mode
@@ -87,7 +87,7 @@ rule megahit_unpaired:
         out_fp=str(ASSEMBLY_FP / "megahit" / "{sample}_asm"),
     threads: 4
     conda:
-        "sbx_assembly.yml"
+        "envs/sbx_assembly.yml"
     shell:
         """
         ## turn off bash strict mode
@@ -145,7 +145,7 @@ rule prodigal:
     log:
         LOG_FP / "prodigal_{sample}.log",
     conda:
-        "sbx_assembly.yml"
+        "envs/sbx_assembly.yml"
     shell:
         """
         if [[ -s {input} ]]; then

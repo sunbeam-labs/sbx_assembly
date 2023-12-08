@@ -2,8 +2,28 @@ import csv
 from collections import Counter
 from pathlib import Path
 from sunbeamlib import circular
-from sunbeamlib.parse import parse_fasta, parse_blast6
+from sunbeamlib.parse import parse_fasta
 from xml.etree.ElementTree import ParseError
+
+
+BLAST6_DEFAULTS = [
+    "qseqid",
+    "sseqid",
+    "pident",
+    "length",
+    "mismatch",
+    "gapopen",
+    "qstart," "qend," "sstart," "send",
+    "evalue",
+    "bitscore",
+]
+
+
+def parse_blast6(f, outfmt=BLAST6_DEFAULTS):
+    for line in f.readlines():
+        vals = line.strip().split("\t")
+        if len(outfmt) == len(vals):
+            yield dict(zip(outfmt, vals))
 
 
 def blast_summary(blast_files):
