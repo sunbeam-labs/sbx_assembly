@@ -33,11 +33,11 @@ def blast_summary(blast_files):
         try:
             with open(infile) as f:
                 for result in parse_blast6(f):
-                    if len(result.hits) > 0:
+                    if len(result) > 0:
                         yield {
                             "sample": sample,
-                            "query": result.id,
-                            "hit": result.hits[0].id,
+                            "query": result["qseqid"],
+                            "hit": result["sseqid"],
                         }
         except ParseError:
             print("Skipping empty/malformed %s" % infile)
