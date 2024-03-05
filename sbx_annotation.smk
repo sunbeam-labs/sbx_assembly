@@ -9,6 +9,18 @@ from sunbeamlib.config import makepath, verify
 TARGET_ANNOTATE = ANNOTATION_FP / "all_samples.tsv"
 
 
+def get_assembly_ext_path() -> Path:
+    ext_path = Path(sunbeam_dir) / "extensions" / "sbx_assembly"
+    if ext_path.exists():
+        return ext_path
+    raise Error(
+        "Filepath for assembly not found, are you sure it's installed under extensions/sbx_assembly?"
+    )
+
+
+SBX_ASSEMBLY_VERSION = open(get_assembly_ext_path() / "VERSION").read().strip()
+
+
 try:
     BENCHMARK_FP
 except NameError:
@@ -55,6 +67,8 @@ rule build_diamond_db:
         LOG_FP / "build_diamond_db.log",
     conda:
         "envs/sbx_annotation.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     shell:
         """
         diamond makedb --in {input} -d {input} 2>&1 | tee {log}
@@ -76,6 +90,8 @@ rule run_blastn:
     threads: Cfg["sbx_annotation"]["threads"]
     conda:
         "envs/sbx_annotation.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     shell:
         """
         blastn \
@@ -104,6 +120,8 @@ rule run_diamond_blastp:
     threads: Cfg["sbx_annotation"]["threads"]
     conda:
         "envs/sbx_annotation.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     shell:
         """
         if [ -s {input.genes} ]; then
@@ -137,6 +155,8 @@ rule run_diamond_blastx:
     threads: Cfg["sbx_annotation"]["threads"]
     conda:
         "envs/sbx_annotation.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     shell:
         """
         if [ -s {input.genes} ]; then
@@ -167,6 +187,8 @@ rule blast_report:
         ANNOTATION_FP / "{blast_prog}" / "{db}" / "{query}" / "report.tsv",
     conda:
         "envs/sbx_annotation.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     script:
         "scripts/blast_report.py"
 
@@ -213,6 +235,8 @@ rule aggregate_results:
         prot=Blastdbs["prot"],
     conda:
         "envs/sbx_annotation.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     script:
         "scripts/aggregate_results.py"
 

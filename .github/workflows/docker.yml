@@ -1,0 +1,60 @@
+name: Push to DockerHub
+
+on:
+  workflow_call:
+
+  workflow_dispatch:
+
+jobs:
+    build-and-push-to-dockerhub:
+        name: Push Docker image to Docker Hub
+        runs-on: ubuntu-latest
+    
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            
+            - name: Get sbx version
+              shell: bash
+              run: |
+                SBX_VER=$(cat VERSION)
+                echo "SBX_VER=$SBX_VER" >> $GITHUB_ENV
+            
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+            
+            - name: Extract metadata (tags, labels) for Docker
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                images: sunbeamlabs/sbx_assembly
+            
+            - name: Build and push Docker image for annotation
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                file: envs/sbx_annotation.Dockerfile
+                push: true
+                tags: sunbeamlabs/sbx_assembly:${{ env.SBX_VER }}-annotation
+                labels: ${{ steps.meta.outputs.labels }}
+
+            - name: Build and push Docker image for assembly
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                file: envs/sbx_assembly.Dockerfile
+                push: true
+                tags: sunbeamlabs/sbx_assembly:${{ env.SBX_VER }}-assembly
+                labels: ${{ steps.meta.outputs.labels }}
+
+            - name: Build and push Docker image for coverage
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                file: envs/sbx_coverage.Dockerfile
+                push: true
+                tags: sunbeamlabs/sbx_assembly:${{ env.SBX_VER }}-coverage
+                labels: ${{ steps.meta.outputs.labels }}
