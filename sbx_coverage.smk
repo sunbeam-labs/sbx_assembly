@@ -4,6 +4,18 @@
 #
 # Requires Minimap2 and samtools.
 
+
+def get_assembly_ext_path() -> Path:
+    ext_path = Path(sunbeam_dir) / "extensions" / "sbx_assembly"
+    if ext_path.exists():
+        return ext_path
+    raise Error(
+        "Filepath for assembly not found, are you sure it's installed under extensions/sbx_assembly?"
+    )
+
+
+SBX_ASSEMBLY_VERSION = open(get_assembly_ext_path() / "VERSION").read().strip()
+
 try:
     BENCHMARK_FP
 except NameError:
@@ -48,6 +60,8 @@ rule minimap_alignment:
     threads: Cfg["sbx_coverage"]["threads"]
     conda:
         "envs/sbx_coverage.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-coverage"
     shell:
         """
         minimap2 -ax sr -t {threads} {input.contig} {input.reads} 1> {output} 2> {log}
@@ -66,6 +80,8 @@ rule contigs_sort:
     threads: Cfg["sbx_coverage"]["threads"]
     conda:
         "envs/sbx_coverage.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-coverage"
     shell:
         """
         samtools sort -@ {threads} -o {output} {input} 2>&1 | tee {log}
@@ -83,6 +99,8 @@ rule mapping_depth:
         LOG_FP / "mapping_depth_{sample}.log",
     conda:
         "envs/sbx_coverage.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-coverage"
     shell:
         """
         samtools depth -aa {input} 1> {output} 2> {log}
@@ -100,6 +118,8 @@ rule get_coverage:
         LOG_FP / "get_coverage_{sample}.log",
     conda:
         "envs/sbx_coverage.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-coverage"
     script:
         "scripts/get_coverage.py"
 

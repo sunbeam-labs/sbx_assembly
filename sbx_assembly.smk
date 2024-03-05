@@ -15,6 +15,18 @@ TARGET_ASSEMBLY = [
 ]
 
 
+def get_assembly_ext_path() -> Path:
+    ext_path = Path(sunbeam_dir) / "extensions" / "sbx_assembly"
+    if ext_path.exists():
+        return ext_path
+    raise Error(
+        "Filepath for assembly not found, are you sure it's installed under extensions/sbx_assembly?"
+    )
+
+
+SBX_ASSEMBLY_VERSION = open(get_assembly_ext_path() / "VERSION").read().strip()
+
+
 try:
     BENCHMARK_FP
 except NameError:
@@ -49,6 +61,8 @@ rule megahit_paired:
     threads: 4
     conda:
         "envs/sbx_assembly.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-assembly"
     shell:
         """
         ## turn off bash strict mode
@@ -88,6 +102,8 @@ rule megahit_unpaired:
     threads: 4
     conda:
         "envs/sbx_assembly.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-assembly"
     shell:
         """
         ## turn off bash strict mode
@@ -146,6 +162,8 @@ rule prodigal:
         LOG_FP / "prodigal_{sample}.log",
     conda:
         "envs/sbx_assembly.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-assembly"
     shell:
         """
         if [[ -s {input} ]]; then

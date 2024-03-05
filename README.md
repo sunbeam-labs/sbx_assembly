@@ -4,7 +4,7 @@
 
 <!-- Begin badges -->
 [![Tests](https://github.com/sunbeam-labs/sbx_assembly/actions/workflows/tests.yml/badge.svg)](https://github.com/sunbeam-labs/sbx_assembly/actions/workflows/tests.yml)
-[![Super-Linter](https://github.com/sunbeam-labs/sbx_assembly/actions/workflows/linter.yml/badge.svg)](https://github.com/sunbeam-labs/sbx_assembly/actions/workflows/linter.yml)
+[![DockerHub](https://img.shields.io/docker/pulls/sunbeamlabs/sbx_assembly)](https://hub.docker.com/repository/docker/sunbeamlabs/sbx_assembly/)
 <!-- End badges -->
 
 A [Sunbeam](https://github.com/sunbeam-labs/sunbeam) extension for assembly of contigs using Megahit, gene annotation using Prodigal, and annotation using [Blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi) and [Diamond](https://github.com/bbuchfink/diamond). It can also map reads to contigs and calculat per-base coverage using [Minimap2](https://github.com/lh3/minimap2) and [samtools](https://github.com/samtools/samtools).
