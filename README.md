@@ -4,6 +4,7 @@
 
 <!-- Begin badges -->
 [![Tests](https://github.com/sunbeam-labs/sbx_assembly/actions/workflows/tests.yml/badge.svg)](https://github.com/sunbeam-labs/sbx_assembly/actions/workflows/tests.yml)
+[![Release](https://img.shields.io/github/release/sunbeam-labs/sbx_assembly.svg?style=flat)](https://github.com/sunbeam-labs/sbx_assembly/releases/latest)
 [![DockerHub](https://img.shields.io/docker/pulls/sunbeamlabs/sbx_assembly)](https://hub.docker.com/repository/docker/sunbeamlabs/sbx_assembly/)
 <!-- End badges -->
 
