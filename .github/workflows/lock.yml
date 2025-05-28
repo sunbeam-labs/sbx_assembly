@@ -56,7 +56,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           branch: update/conda-lock
-          commit-message: Update conda lockfiles
+          commit-message: Update conda lockfiles [automated]
           title: "Update Conda lockfiles"
           body: |
             This PR updates all `conda-lock` files based on the latest environment specifications.

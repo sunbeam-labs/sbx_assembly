@@ -1,12 +1,12 @@
 name: Tests
 
 on:
-  push:
-    branches: [ master, main ]
   workflow_call:
+
   workflow_dispatch:
+
   schedule:
-    - cron: "0 13 * * 1"
+    - cron: '0 0 * * *'
 
 jobs:
   lint:
