@@ -45,8 +45,7 @@ jobs:
         run: pip install pytest
 
       - name: Run Unit Tests
-        run: true #pytest .tests/unit/
-        # This'll require having a lib within scripts with internal tests
+        run: pytest .tests/unit/
 
   test-e2e:
     name: Test Extension with Sunbeam
