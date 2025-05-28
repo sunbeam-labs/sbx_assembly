@@ -1,0 +1,62 @@
+name: Update Conda Lockfiles
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # every Monday at 02:00 UTC
+  workflow_dispatch:
+
+jobs:
+  update-locks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # required for PR branch handling
+
+      - name: Set up Mambaforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-variant: Mambaforge
+          activate-environment: base
+          python-version: 3.11
+
+      - name: Install conda-lock
+        run: mamba install -c conda-forge conda-lock
+
+      - name: Rebuild all lock files
+        run: |
+          for envfile in $(find envs -name '*.yml'); do
+            echo "Locking $envfile"
+
+            # Extract env name from envs/env_name.yml → env_name
+            envname=$(basename "$envfile" .yml)
+            outdir=$(dirname "$envfile")
+            outfile="$outdir/${envname}.linux-64.pin.txt"
+
+            # Generate lock and rename
+            conda-lock lock \
+                -f "$envfile" \
+                --kind explicit \
+                --mamba \
+                --platform linux-64 \
+                --filename-template conda-lock-{platform}.txt
+
+            mv conda-lock-linux-64.txt "$outfile"
+          done
+
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: update/conda-lock
+          commit-message: Update conda lockfiles
+          title: "Update Conda lockfiles"
+          body: |
+            This PR updates all `conda-lock` files based on the latest environment specifications.
+            - Automated weekly by GitHub Actions
+          author: GitHub <noreply@github.com>
+          labels: |
+            automated
+            dependencies

@@ -5,5 +5,4 @@ channels:
 dependencies:
   - minimap2
   - numpy
-  - samtools=1.9
-  - python=3
+  - samtools
