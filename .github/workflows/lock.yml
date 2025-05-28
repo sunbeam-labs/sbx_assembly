@@ -16,7 +16,9 @@ jobs:
           fetch-depth: 0  # required for PR branch handling
 
       - uses: mamba-org/setup-micromamba@v2
-      
+        with:
+          init-shell: bash
+
       - name: Install conda-lock
         run: mamba install -c conda-forge conda-lock
 
