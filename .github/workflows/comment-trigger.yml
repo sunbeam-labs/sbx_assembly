@@ -10,8 +10,5 @@ jobs:
       github.event.issue.pull_request &&
       github.event.comment.body == '/test' &&
       contains(fromJson('["OWNER", "COLLABORATOR"]'), github.event.comment.author_association)
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: ./.github/workflows/tests.yml
-        secrets: inherit
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit

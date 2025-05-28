@@ -9,4 +9,3 @@ jobs:
     run-tests:
         uses: ./.github/workflows/tests.yml
         secrets: inherit
-    
