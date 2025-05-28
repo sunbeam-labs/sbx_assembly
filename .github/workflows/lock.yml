@@ -15,14 +15,22 @@ jobs:
         with:
           fetch-depth: 0  # required for PR branch handling
 
-      - uses: mamba-org/setup-micromamba@v2
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v2
         with:
+          environment-name: base
+          create-args: >-
+            python=3.11
           init-shell: bash
+          cache-downloads: true
+        
 
       - name: Install conda-lock
-        run: mamba install -c conda-forge conda-lock
+        shell: bash -l {0}
+        run: micromamba install -c conda-forge conda-lock --yes
 
       - name: Rebuild all lock files
+        shell: bash -l {0}
         run: |
           for envfile in $(find envs -name '*.yml'); do
             echo "Locking $envfile"
@@ -36,7 +44,7 @@ jobs:
             conda-lock lock \
                 -f "$envfile" \
                 --kind explicit \
-                --mamba \
+                --micromamba \
                 --platform linux-64 \
                 --filename-template conda-lock-{platform}.txt
 
