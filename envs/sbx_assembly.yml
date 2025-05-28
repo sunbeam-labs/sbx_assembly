@@ -1,6 +1,7 @@
 name: sbx_assembly
 channels:
   - bioconda
+  - conda-forge
 dependencies:
   - megahit
   - prodigal
