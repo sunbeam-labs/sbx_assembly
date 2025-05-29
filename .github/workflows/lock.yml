@@ -72,7 +72,13 @@ jobs:
     steps:
       - name: Generate test summary
         run: |
-          echo "### ✅ Test Results for PR #${{ needs.update-locks.outputs.pr-number }}" >> comment.md
+          if ${{ needs.run-tests.result == 'success' }}; then
+            icon="✅"
+          else
+            icon="❌"
+          fi
+          
+          echo "### ${icon} Test Results for PR #${{ needs.update-locks.outputs.pr-number }}" >> comment.md
           echo "- Workflow: \`tests.yml\`" >> comment.md
           echo "- Status: ${{ needs.run-tests.result }}" >> comment.md
           echo "- Run: [View Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> comment.md
