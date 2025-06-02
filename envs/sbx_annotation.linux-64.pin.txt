@@ -20,7 +20,7 @@ https://conda.anaconda.org/conda-forge/linux-64/keyutils-1.6.1-h166bdaf_0.tar.bz
 https://conda.anaconda.org/conda-forge/linux-64/libasprintf-0.24.1-h8e693c7_0.conda#57566a81dd1e5aa3d98ac7582e8bfe03
 https://conda.anaconda.org/conda-forge/linux-64/libedit-3.1.20250104-pl5321h7949ede_0.conda#c277e0a4d549b03ac1e9d6cbbe3d017b
 https://conda.anaconda.org/conda-forge/linux-64/libev-4.33-hd590300_2.conda#172bf1cd1ff8629f2b1179945ed45055
-https://conda.anaconda.org/conda-forge/linux-64/libsqlite-3.49.2-hee588c1_0.conda#93048463501053a00739215ea3f36324
+https://conda.anaconda.org/conda-forge/linux-64/libsqlite-3.50.0-hee588c1_0.conda#71888e92098d0f8c41b09a671ad289bc
 https://conda.anaconda.org/conda-forge/linux-64/libssh2-1.11.1-hcf80075_0.conda#eecce068c7e4eddeb169591baac20ac4
 https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-15.1.0-h4852527_2.conda#9d2072af184b5caa29492bf2344597bb
 https://conda.anaconda.org/conda-forge/linux-64/libunistring-0.9.10-h7f98852_0.tar.bz2#7245a044b4a1980ed83196176b78b73a
