@@ -21,7 +21,7 @@ https://conda.anaconda.org/conda-forge/linux-64/ncurses-6.5-h2d0b736_3.conda#47e
 https://conda.anaconda.org/conda-forge/linux-64/openssl-3.5.0-h7b32b05_1.conda#de356753cfdbffcde5bb1e86e3aa6cd0
 https://conda.anaconda.org/bioconda/linux-64/prodigal-2.6.3-h7b50bb2_10.tar.bz2#66cc94ede7d4cd483a0412adaf9532ce
 https://conda.anaconda.org/conda-forge/linux-64/bzip2-1.0.8-h4bc722e_7.conda#62ee74e96c5ebb0af99386de58cf9553
-https://conda.anaconda.org/conda-forge/linux-64/libsqlite-3.49.2-hee588c1_0.conda#93048463501053a00739215ea3f36324
+https://conda.anaconda.org/conda-forge/linux-64/libsqlite-3.50.0-hee588c1_0.conda#71888e92098d0f8c41b09a671ad289bc
 https://conda.anaconda.org/conda-forge/linux-64/libuuid-2.38.1-h0b41bf4_0.conda#40b61aab5c7ba9ff276c41cfffe6b80b
 https://conda.anaconda.org/conda-forge/linux-64/readline-8.2-h8c095d6_2.conda#283b96675859b20a825f8fa30f311446
 https://conda.anaconda.org/conda-forge/linux-64/tk-8.6.13-noxft_hd72426e_102.conda#a0116df4f4ed05c303811a837d5b39d8
