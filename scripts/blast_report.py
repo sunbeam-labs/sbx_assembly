@@ -1,5 +1,9 @@
 import csv
-from . import blast_summary
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from scripts import blast_summary
 
 
 with open(snakemake.output[0], "w") as out:

@@ -47,7 +47,7 @@ rule megahit_paired:
         fi
 
         exitcode=0
-        megahit -t {threads} -1 {input.r1} -2 {input.r2} -o {params.out_fp} --continue >> {log} 2>&1 || exitcode=$?
+        megahit -t {threads} -1 {input.r1} -2 {input.r2} -o $OUT_DIR --continue >> {log} 2>&1 || exitcode=$?
 
         if [ $exitcode -eq 255 ]
         then
@@ -87,7 +87,7 @@ rule megahit_unpaired:
         fi
 
         exitcode=0
-        megahit -t {threads} -r {input} -o {params.out_fp} -f --continue >> {log} 2>&1 || exitcode=$?
+        megahit -t {threads} -r {input} -o $OUT_DIR -f --continue >> {log} 2>&1 || exitcode=$?
 
         if [ $exitcode -eq 255 ]
         then

@@ -1,7 +1,11 @@
 import csv
+import sys
 from collections import Counter
+from pathlib import Path
 from sunbeam.bfx.parse import parse_fasta
-from . import blast_summary
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from scripts import blast_summary
 
 
 def circular(seq: str, kmin: int, kmax: int, min_len: int) -> bool:
