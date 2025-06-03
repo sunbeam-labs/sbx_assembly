@@ -1,58 +1,27 @@
-# -*- mode: Snakemake -*-
-#
-# Contig annotation.
-#
-# See Readme.md
-
-from sunbeamlib.config import makepath, verify
-
-TARGET_ANNOTATE = ANNOTATION_FP / "all_samples.tsv"
-
-
-def get_assembly_ext_path() -> Path:
-    ext_path = Path(sunbeam_dir) / "extensions" / "sbx_assembly"
-    if ext_path.exists():
-        return ext_path
-    raise Error(
-        "Filepath for assembly not found, are you sure it's installed under extensions/sbx_assembly?"
-    )
-
-
-SBX_ASSEMBLY_VERSION = open(get_assembly_ext_path() / "VERSION").read().strip()
-
-
 try:
-    BENCHMARK_FP
+    SBX_ASSEMBLY_VERSION = get_ext_version("sbx_assembly")
 except NameError:
-    BENCHMARK_FP = output_subdir(Cfg, "benchmarks")
+    # For backwards compatibility with older versions of Sunbeam
+    SBX_ASSEMBLY_VERSION = "0.0.0"
+
+
+Blastdbs = {"nucl": {}, "prot": {}}
 try:
-    LOG_FP
-except NameError:
-    LOG_FP = output_subdir(Cfg, "logs")
-
-
-def process_databases(db_dict):
-    """Process the list of databases.
-
-    Expands the nucleotide and protein databases specified
-    """
-    dbs = {"nucl": {}, "prot": {}}
-    root = verify(makepath(db_dict["root_fp"]))
-    nucl = db_dict.get("nucleotide")
-    prot = db_dict.get("protein")
-    if nucl:
-        dbs["nucl"] = {db: str(root / path) for db, path in nucl.items()}
-    if prot:
-        dbs["prot"] = {db: str(root / path) for db, path in prot.items()}
-    return dbs
-
-
-Blastdbs = process_databases(Cfg["blastdbs"])
+    Blastdbs["nucl"] = {
+        db: str(Path(Cfg["blastdbs"]["root_fp"]) / path)
+        for db, path in Cfg["blastdbs"].get("nucleotide", {}).items()
+    }
+    Blastdbs["prot"] = {
+        db: str(Path(Cfg["blastdbs"]["root_fp"]) / path)
+        for db, path in Cfg["blastdbs"].get("protein", {}).items()
+    }
+except KeyError:
+    pass
 
 
 rule all_annotate:
     input:
-        TARGET_ANNOTATE,
+        ANNOTATION_FP / "all_samples.tsv",
 
 
 rule build_diamond_db:
@@ -71,7 +40,7 @@ rule build_diamond_db:
         f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     shell:
         """
-        diamond makedb --in {input} -d {input} 2>&1 | tee {log}
+        diamond makedb --in {input} -d {input} > {log} 2>&1
         """
 
 
@@ -102,7 +71,7 @@ rule run_blastn:
         -evalue 1e-10 \
         -max_target_seqs 5000 \
         -out {output} \
-        2>&1 | tee {log}
+        > {log} 2>&1
         """
 
 
@@ -124,6 +93,7 @@ rule run_diamond_blastp:
         f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     shell:
         """
+        echo "Running diamond blastp on {input.genes} against {input.indexes}" > {log}
         if [ -s {input.genes} ]; then
             diamond blastp \
             -q {input.genes} \
@@ -133,7 +103,7 @@ rule run_diamond_blastp:
             --evalue 1e-10 \
             --max-target-seqs 2475 \
             --out {output} \
-            2>&1 | tee {log}
+            > {log} 2>&1
         else
             echo "Caught empty query" >> {log}
             touch {output}
@@ -159,6 +129,7 @@ rule run_diamond_blastx:
         f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     shell:
         """
+        echo "Running diamond blastx on {input.genes} against {input.indexes}" > {log}
         if [ -s {input.genes} ]; then
             diamond blastx \
             -q {input.genes} \
@@ -168,7 +139,7 @@ rule run_diamond_blastx:
             --evalue 1e-10 \
             --max-target-seqs 2475 \
             --out {output} \
-            2>&1 | tee {log}
+            > {log} 2>&1
         else
             echo "Caught empty query" >> {log}
             touch {output}
@@ -233,10 +204,6 @@ rule aggregate_results:
         dbs=list(Blastdbs["nucl"].keys()) + list(Blastdbs["prot"].keys()),
         nucl=Blastdbs["nucl"],
         prot=Blastdbs["prot"],
-    conda:
-        "envs/sbx_annotation.yml"
-    container:
-        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     script:
         "scripts/aggregate_results.py"
 

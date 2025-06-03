@@ -1,46 +1,19 @@
-# -*- mode: Snakemake -*-
-#
-# Contig building and other assembly rules
-#
-# Requires Megahit.
-
-
-TARGET_ASSEMBLY = [
-    expand(ASSEMBLY_FP / "contigs" / "{sample}-contigs.fa", sample=Samples.keys()),
-    expand(
-        ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_{suffix}.fa",
-        sample=Samples.keys(),
-        suffix=["prot", "nucl"],
-    ),
-]
-
-
-def get_assembly_ext_path() -> Path:
-    ext_path = Path(sunbeam_dir) / "extensions" / "sbx_assembly"
-    if ext_path.exists():
-        return ext_path
-    raise Error(
-        "Filepath for assembly not found, are you sure it's installed under extensions/sbx_assembly?"
-    )
-
-
-SBX_ASSEMBLY_VERSION = open(get_assembly_ext_path() / "VERSION").read().strip()
-
-
 try:
-    BENCHMARK_FP
+    SBX_ASSEMBLY_VERSION = get_ext_version("sbx_assembly")
 except NameError:
-    BENCHMARK_FP = output_subdir(Cfg, "benchmarks")
-try:
-    LOG_FP
-except NameError:
-    LOG_FP = output_subdir(Cfg, "logs")
+    # For backwards compatibility with older versions of Sunbeam
+    SBX_ASSEMBLY_VERSION = "0.0.0"
 
 
 rule all_assembly:
     """Build contigs for all samples."""
     input:
-        TARGET_ASSEMBLY,
+        expand(ASSEMBLY_FP / "contigs" / "{sample}-contigs.fa", sample=Samples.keys()),
+        expand(
+            ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_{suffix}.fa",
+            sample=Samples.keys(),
+            suffix=["prot", "nucl"],
+        ),
 
 
 ruleorder: megahit_paired > megahit_unpaired
@@ -51,13 +24,11 @@ rule megahit_paired:
         r1=QC_FP / "decontam" / "{sample}_1.fastq.gz",
         r2=QC_FP / "decontam" / "{sample}_2.fastq.gz",
     output:
-        ASSEMBLY_FP / "megahit" / "{sample}_asm" / "final.contigs.fa",
+        final=ASSEMBLY_FP / "megahit" / "{sample}_asm" / "final.contigs.fa",
     benchmark:
         BENCHMARK_FP / "megahit_paired_{sample}.tsv"
     log:
         LOG_FP / "megahit_paired_{sample}.log",
-    params:
-        out_fp=str(ASSEMBLY_FP / "megahit" / "{sample}_asm"),
     threads: 4
     conda:
         "envs/sbx_assembly.yml"
@@ -65,25 +36,26 @@ rule megahit_paired:
         f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-assembly"
     shell:
         """
-        ## turn off bash strict mode
+        # Turn off bash strict mode
         set +o pipefail
 
-        ## sometimes the error is due to lack of memory
-        exitcode=0
-        if [ -d {params.out_fp} ]
+        OUT_DIR=$(dirname {output.final})
+        if [ -d $OUT_DIR ]
         then
             echo "Clearing previous megahit directory..." > {log}
-            rm -rf {params.out_fp}
+            rm -rf $OUT_DIR
         fi
-        megahit -t {threads} -1 {input.r1} -2 {input.r2} -o {params.out_fp} --continue 2>&1 {log} || exitcode=$?
+
+        exitcode=0
+        megahit -t {threads} -1 {input.r1} -2 {input.r2} -o $OUT_DIR --continue >> {log} 2>&1 || exitcode=$?
 
         if [ $exitcode -eq 255 ]
         then
             touch {output}
-            echo "Empty contigs" 2>&1 | tee {log}
+            echo "Empty contigs" >> {log}
         elif [ $exitcode -gt 1 ]
         then
-            echo "Check your memory" 2>&1 | tee {log}
+            echo "Something went wrong (maybe check the memory usage)" >> {log}
         fi
         """
 
@@ -92,13 +64,11 @@ rule megahit_unpaired:
     input:
         QC_FP / "decontam" / "{sample}_1.fastq.gz",
     output:
-        ASSEMBLY_FP / "megahit" / "{sample}_asm" / "final.contigs.fa",
+        final=ASSEMBLY_FP / "megahit" / "{sample}_asm" / "final.contigs.fa",
     benchmark:
         BENCHMARK_FP / "megahit_unpaired_{sample}.tsv"
     log:
         LOG_FP / "megahit_unpaired_{sample}.log",
-    params:
-        out_fp=str(ASSEMBLY_FP / "megahit" / "{sample}_asm"),
     threads: 4
     conda:
         "envs/sbx_assembly.yml"
@@ -106,20 +76,26 @@ rule megahit_unpaired:
         f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-assembly"
     shell:
         """
-        ## turn off bash strict mode
+        # Turn off bash strict mode
         set +o pipefail
 
-        ## sometimes the error is due to lack of memory
+        OUT_DIR=$(dirname {output.final})
+        if [ -d $OUT_DIR ]
+        then
+            echo "Clearing previous megahit directory..." > {log}
+            rm -rf $OUT_DIR
+        fi
+
         exitcode=0
-        megahit -t {threads} -r {input} -o {params.out_fp} -f --continue 2>&1 {log} || exitcode=$?
+        megahit -t {threads} -r {input} -o $OUT_DIR -f --continue >> {log} 2>&1 || exitcode=$?
 
         if [ $exitcode -eq 255 ]
         then
-            echo "Empty contigs"
+            echo "Empty contigs" >> {log}
             touch {output}
         elif [ $exitcode -gt 1 ]
         then
-            echo "Check your memory"
+            echo "Something went wrong (maybe check the memory usage)" >> {log}
         fi
         """
 
@@ -168,7 +144,7 @@ rule prodigal:
         """
         if [[ -s {input} ]]; then
           prodigal -i {input} -o {output.gff} \
-          -a {output.faa} -d {output.fna} -p meta 2>&1 | tee {log}
+          -a {output.faa} -d {output.fna} -p meta > {log} 2>&1
         else
           touch {output.faa}
           touch {output.gff}

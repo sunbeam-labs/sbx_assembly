@@ -1,47 +1,23 @@
 import csv
+import sys
 from collections import Counter
 from pathlib import Path
-from sunbeamlib import circular
-from sunbeamlib.parse import parse_fasta
-from xml.etree.ElementTree import ParseError
+from sunbeam.bfx.parse import parse_fasta
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from scripts import blast_summary
 
 
-BLAST6_DEFAULTS = [
-    "qseqid",
-    "sseqid",
-    "pident",
-    "length",
-    "mismatch",
-    "gapopen",
-    "qstart," "qend," "sstart," "send",
-    "evalue",
-    "bitscore",
-]
+def circular(seq: str, kmin: int, kmax: int, min_len: int) -> bool:
+    """Determine if a sequence is circular.
 
-
-def parse_blast6(f, outfmt=BLAST6_DEFAULTS):
-    for line in f.readlines():
-        vals = line.strip().split("\t")
-        if len(outfmt) == len(vals):
-            yield dict(zip(outfmt, vals))
-
-
-def blast_summary(blast_files):
-    """Summarize BLAST results from an set of BLAST output files."""
-    for infile in blast_files:
-        sample = Path(infile).stem
-        try:
-            with open(infile) as f:
-                for result in parse_blast6(f):
-                    if len(result) > 0:
-                        yield {
-                            "sample": sample,
-                            "query": result["qseqid"],
-                            "hit": result["sseqid"],
-                        }
-        except ParseError:
-            print("Skipping empty/malformed %s" % infile)
-            continue
+    Checks for repeated k-mer at beginning and end of a sequence for a given
+    range of values for k.
+    """
+    if len(seq) < min_len:
+        return False
+    # Short-circuit checking: returns True for the first kmer that matches
+    return any([k for k in range(kmin, kmax + 1) if seq[0:k] == seq[len(seq) - k :]])
 
 
 def blast_contig_summary(blast_files):
