@@ -71,7 +71,7 @@ rule run_blastn:
         -evalue 1e-10 \
         -max_target_seqs 5000 \
         -out {output} \
-        2>&1 | tee {log}
+        > {log} 2>&1
         """
 
 
@@ -93,6 +93,7 @@ rule run_diamond_blastp:
         f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     shell:
         """
+        echo "Running diamond blastp on {input.genes} against {input.indexes}" > {log}
         if [ -s {input.genes} ]; then
             diamond blastp \
             -q {input.genes} \
@@ -102,7 +103,7 @@ rule run_diamond_blastp:
             --evalue 1e-10 \
             --max-target-seqs 2475 \
             --out {output} \
-            2>&1 | tee {log}
+            > {log} 2>&1
         else
             echo "Caught empty query" >> {log}
             touch {output}
@@ -128,6 +129,7 @@ rule run_diamond_blastx:
         f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     shell:
         """
+        echo "Running diamond blastx on {input.genes} against {input.indexes}" > {log}
         if [ -s {input.genes} ]; then
             diamond blastx \
             -q {input.genes} \
@@ -137,7 +139,7 @@ rule run_diamond_blastx:
             --evalue 1e-10 \
             --max-target-seqs 2475 \
             --out {output} \
-            2>&1 | tee {log}
+            > {log} 2>&1
         else
             echo "Caught empty query" >> {log}
             touch {output}
@@ -202,10 +204,6 @@ rule aggregate_results:
         dbs=list(Blastdbs["nucl"].keys()) + list(Blastdbs["prot"].keys()),
         nucl=Blastdbs["nucl"],
         prot=Blastdbs["prot"],
-    conda:
-        "envs/sbx_annotation.yml"
-    container:
-        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     script:
         "scripts/aggregate_results.py"
 

@@ -63,7 +63,7 @@ rule contigs_sort:
         f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-coverage"
     shell:
         """
-        samtools sort -@ {threads} -o {output} {input} 2>&1 | tee {log}
+        samtools sort -@ {threads} -o {output} {input} > {log} 2>&1
         """
 
 
@@ -111,5 +111,9 @@ rule summarize_coverage:
         ),
     output:
         ASSEMBLY_FP / "contigs_coverage.txt",
+    benchmark:
+        BENCHMARK_FP / "summarize_coverage.tsv"
+    log:
+        LOG_FP / "summarize_coverage.log",
     shell:
-        "(head -n 1 {input[0]}; tail -q -n +2 {input}) > {output}"
+        "(head -n 1 {input[0]}; tail -q -n +2 {input}) > {output} 2> {log}"
