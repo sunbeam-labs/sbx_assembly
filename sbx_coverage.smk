@@ -1,29 +1,8 @@
-# -*- mode: Snakemake -*-
-#
-# Map reads to contigs and calculate per base coverage
-#
-# Requires Minimap2 and samtools.
-
-
-def get_assembly_ext_path() -> Path:
-    ext_path = Path(sunbeam_dir) / "extensions" / "sbx_assembly"
-    if ext_path.exists():
-        return ext_path
-    raise Error(
-        "Filepath for assembly not found, are you sure it's installed under extensions/sbx_assembly?"
-    )
-
-
-SBX_ASSEMBLY_VERSION = open(get_assembly_ext_path() / "VERSION").read().strip()
-
 try:
-    BENCHMARK_FP
+    SBX_ASSEMBLY_VERSION = get_ext_version("sbx_assembly")
 except NameError:
-    BENCHMARK_FP = output_subdir(Cfg, "benchmarks")
-try:
-    LOG_FP
-except NameError:
-    LOG_FP = output_subdir(Cfg, "logs")
+    # For backwards compatibility with older versions of Sunbeam
+    SBX_ASSEMBLY_VERSION = "0.0.0"
 
 
 rule all_coverage:
