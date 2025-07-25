@@ -9,12 +9,6 @@ rule all_assembly:
     """Build contigs for all samples."""
     input:
         expand(ASSEMBLY_FP / "contigs" / "{sample}-contigs.fa", sample=Samples.keys()),
-        expand(
-            ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_{suffix}.fa",
-            sample=Samples.keys(),
-            suffix=["prot", "nucl"],
-        ),
-
 
 ruleorder: megahit_paired > megahit_unpaired
 
@@ -111,6 +105,8 @@ rule final_filter:
         BENCHMARK_FP / "final_filter_{sample}.tsv"
     params:
         len=Cfg["sbx_assembly"]["min_length"],
+    conda:
+        "envs/sbx_assembly.yml"
     script:
         "scripts/final_filter.py"
 
@@ -123,40 +119,3 @@ rule clean_assembly:
         rm -rf {input.M} && echo "Cleanup assembly finished."
         """
 
-
-rule prodigal:
-    """Use Progial for coding genes predictions in contigs."""
-    input:
-        ASSEMBLY_FP / "contigs" / "{sample}-contigs.fa",
-    output:
-        gff=ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes.gff",
-        faa=ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_prot.fa",
-        fna=ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_nucl.fa",
-    benchmark:
-        BENCHMARK_FP / "prodigal_{sample}.tsv"
-    log:
-        LOG_FP / "prodigal_{sample}.log",
-    conda:
-        "envs/sbx_assembly.yml"
-    container:
-        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-assembly"
-    shell:
-        """
-        if [[ -s {input} ]]; then
-          prodigal -i {input} -o {output.gff} \
-          -a {output.faa} -d {output.fna} -p meta > {log} 2>&1
-        else
-          touch {output.faa}
-          touch {output.gff}
-          touch {output.fna}
-        fi
-        """
-
-
-rule _test_prodigal:
-    input:
-        expand(
-            ANNOTATION_FP / "genes" / "prodigal" / "{sample}_genes_{suffix}.fa",
-            sample=Samples.keys(),
-            suffix=["prot", "nucl"],
-        ),

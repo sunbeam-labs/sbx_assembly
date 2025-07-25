@@ -7,13 +7,13 @@ except NameError:
 
 rule all_coverage:
     input:
-        ASSEMBLY_FP / "contigs_coverage.txt",
+        ASSEMBLY_FP / "coverage" / "contigs_coverage.txt",
 
 
 rule _contigs_mapping:
     input:
         expand(
-            ASSEMBLY_FP / "contigs" / "coverage" / "{sample}.depth",
+            ASSEMBLY_FP / "coverage" / "coverage" / "{sample}.depth",
             sample=Samples.keys(),
         ),
 
@@ -21,7 +21,7 @@ rule _contigs_mapping:
 rule _all_coverage:
     input:
         expand(
-            ASSEMBLY_FP / "contigs" / "coverage" / "{sample}.csv",
+            ASSEMBLY_FP / "coverage" / "coverage" / "{sample}.csv",
             sample=Samples.keys(),
         ),
 
@@ -31,12 +31,12 @@ rule minimap_alignment:
         contig=ASSEMBLY_FP / "contigs" / "{sample}-contigs.fa",
         reads=expand(QC_FP / "decontam" / "{{sample}}_{rp}.fastq.gz", rp=Pairs),
     output:
-        temp(ASSEMBLY_FP / "contigs" / "minimap2" / "{sample}.sam"),
+        temp(ASSEMBLY_FP / "coverage" / "minimap2" / "{sample}.sam"),
     benchmark:
         BENCHMARK_FP / "minimap_alignment_{sample}.tsv"
     log:
         LOG_FP / "minimap_alignment_{sample}.log",
-    threads: Cfg["sbx_coverage"]["threads"]
+    threads: Cfg["sbx_assembly"]["threads"]
     conda:
         "envs/sbx_coverage.yml"
     container:
@@ -49,14 +49,14 @@ rule minimap_alignment:
 
 rule contigs_sort:
     input:
-        ASSEMBLY_FP / "contigs" / "minimap2" / "{sample}.sam",
+        ASSEMBLY_FP / "coverage" / "minimap2" / "{sample}.sam",
     output:
-        ASSEMBLY_FP / "contigs" / "samtools" / "{sample}.sorted.bam",
+        ASSEMBLY_FP / "coverage" / "samtools" / "{sample}.sorted.bam",
     benchmark:
         BENCHMARK_FP / "contigs_sort_{sample}.tsv"
     log:
         LOG_FP / "contigs_sort_{sample}.log",
-    threads: Cfg["sbx_coverage"]["threads"]
+    threads: Cfg["sbx_assembly"]["threads"]
     conda:
         "envs/sbx_coverage.yml"
     container:
@@ -69,9 +69,9 @@ rule contigs_sort:
 
 rule mapping_depth:
     input:
-        ASSEMBLY_FP / "contigs" / "samtools" / "{sample}.sorted.bam",
+        ASSEMBLY_FP / "coverage" / "samtools" / "{sample}.sorted.bam",
     output:
-        ASSEMBLY_FP / "contigs" / "coverage" / "{sample}.depth",
+        ASSEMBLY_FP / "coverage" / "coverage" / "{sample}.depth",
     benchmark:
         BENCHMARK_FP / "mapping_depth_{sample}.tsv"
     log:
@@ -88,9 +88,9 @@ rule mapping_depth:
 
 rule get_coverage:
     input:
-        ASSEMBLY_FP / "contigs" / "coverage" / "{sample}.depth",
+        ASSEMBLY_FP / "coverage" / "coverage" / "{sample}.depth",
     output:
-        ASSEMBLY_FP / "contigs" / "coverage" / "{sample}.csv",
+        ASSEMBLY_FP / "coverage" / "coverage" / "{sample}.csv",
     benchmark:
         BENCHMARK_FP / "get_coverage_{sample}.tsv"
     log:
@@ -106,11 +106,11 @@ rule get_coverage:
 rule summarize_coverage:
     input:
         expand(
-            ASSEMBLY_FP / "contigs" / "coverage" / "{sample}.csv",
+            ASSEMBLY_FP / "coverage" / "coverage" / "{sample}.csv",
             sample=Samples.keys(),
         ),
     output:
-        ASSEMBLY_FP / "contigs_coverage.txt",
+        ASSEMBLY_FP / "coverage" / "contigs_coverage.txt",
     benchmark:
         BENCHMARK_FP / "summarize_coverage.tsv"
     log:
