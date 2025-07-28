@@ -8,6 +8,7 @@ from pathlib import Path
 @pytest.fixture
 def setup(tmp_path):
     reads_fp = Path(".tests/data/reads/").resolve()
+    hosts_fp = Path(".tests/data/hosts/").resolve()
     kraken_db_fp = Path(".tests/data/kraken_db/").resolve()
     project_dir = tmp_path / "project"
 
