@@ -2,3 +2,4 @@ sbx_assembly:
   min_length: 300
   threads: 4
   bakta_ref: ''
+  kraken_db_fp: ''

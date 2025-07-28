@@ -10,6 +10,7 @@ rule all_assembly:
     input:
         expand(ASSEMBLY_FP / "contigs" / "{sample}-contigs.fa", sample=Samples.keys()),
 
+
 ruleorder: megahit_paired > megahit_unpaired
 
 
@@ -107,6 +108,8 @@ rule final_filter:
         len=Cfg["sbx_assembly"]["min_length"],
     conda:
         "envs/sbx_assembly.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-assembly"
     script:
         "scripts/final_filter.py"
 
@@ -118,4 +121,3 @@ rule clean_assembly:
         """
         rm -rf {input.M} && echo "Cleanup assembly finished."
         """
-

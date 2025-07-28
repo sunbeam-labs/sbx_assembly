@@ -4,16 +4,12 @@ except NameError:
     # For backwards compatibility with older versions of Sunbeam
     SBX_ASSEMBLY_VERSION = "0.0.0"
 
-try:
-    SBX_KRAKEN_VERSION = get_ext_version("sbx_kraken")
-except NameError:
-    # For backwards compatibility with older versions of Sunbeam
-    SBX_KRAKEN_VERSION = "0.0.0"
 
 rule all_annotate:
     input:
         expand(ASSEMBLY_FP / "bakta" / "{sample}" / "{sample}.txt", sample=Samples),
         expand(ASSEMBLY_FP / "kraken" / "{sample}-raw.tsv", sample=Samples),
+
 
 rule mag_bakta:
     input:
@@ -28,6 +24,9 @@ rule mag_bakta:
         BENCHMARK_FP / "assembly_bakta_{sample}.tsv"
     conda:
         "envs/sbx_annotation.yml"
+    container:
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
+    threads: 8
     shell:
         """
         if [ -s {input.contigs} ]; then
@@ -57,7 +56,7 @@ rule kraken2_classify_mags:
     conda:
         "envs/sbx_annotation.yml"
     container:
-        f"docker://sunbeamlabs/sbx_kraken:{SBX_KRAKEN_VERSION}"
+        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-annotation"
     threads: 8
     shell:
         """
