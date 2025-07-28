@@ -3,19 +3,32 @@ from xml.etree.ElementTree import ParseError
 
 # Standard BLAST6 format columns
 _DEFAULT_BLAST6_COLUMNS = [
-    "qseqid", "sseqid", "pident", "length", "mismatch", "gapopen",
-    "qstart", "qend", "sstart", "send", "evalue", "bitscore"
+    "qseqid",
+    "sseqid",
+    "pident",
+    "length",
+    "mismatch",
+    "gapopen",
+    "qstart",
+    "qend",
+    "sstart",
+    "send",
+    "evalue",
+    "bitscore",
 ]
+
 
 def _get_blast6_defaults():
     """Get BLAST6 defaults from sunbeam, with fallback to standard format."""
     try:
         from sunbeam.bfx.parse import BLAST6_DEFAULTS
+
         return BLAST6_DEFAULTS
     except ImportError:
         try:
             # For compatibility with older versions of Sunbeam
             from sunbeamlib.parse import BLAST6_DEFAULTS
+
             return BLAST6_DEFAULTS
         except ImportError:
             # Fallback to standard BLAST6 format
