@@ -3,5 +3,5 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - blast
-  - diamond
+  - bakta
+  - kraken2
