@@ -2,24 +2,20 @@ import os
 import pytest
 import shutil
 import subprocess as sp
-import tempfile
 from pathlib import Path
 
 
 @pytest.fixture
-def setup():
-    temp_dir = Path(tempfile.mkdtemp())
-
+def setup(tmp_path):
     reads_fp = Path(".tests/data/reads/").resolve()
-    hosts_fp = Path(".tests/data/hosts/").resolve()
-    project_dir = temp_dir / "project/"
+    kraken_db_fp = Path(".tests/data/kraken_db/").resolve()
+    project_dir = tmp_path / "project"
 
     sp.check_output(["sunbeam", "init", "--data_fp", reads_fp, project_dir])
 
     config_fp = project_dir / "sunbeam_config.yml"
 
     config_str = f"qc: {{host_fp: {hosts_fp}}}"
-
     sp.check_output(
         [
             "sunbeam",
@@ -30,14 +26,23 @@ def setup():
         ]
     )
 
-    yield temp_dir, project_dir
+    config_str = f"sbx_assembly: {{kraken_db_fp: {kraken_db_fp}}}"
+    sp.check_output(
+        [
+            "sunbeam",
+            "config",
+            "--modify",
+            f"{config_str}",
+            f"{config_fp}",
+        ]
+    )
 
-    shutil.rmtree(temp_dir)
+    yield tmp_path, project_dir
 
 
 @pytest.fixture
 def run_sunbeam(setup):
-    temp_dir, project_dir = setup
+    tmp_path, project_dir = setup
     output_fp = project_dir / "sunbeam_output"
     log_fp = output_fp / "logs"
     stats_fp = project_dir / "stats"
@@ -48,11 +53,12 @@ def run_sunbeam(setup):
             "run",
             "--profile",
             project_dir,
-            "all_annotate",
+            # We don't have a good way of testing Bakta yet
+            "_test_kraken",
             "all_assembly",
             "all_coverage",
             "--directory",
-            temp_dir,
+            tmp_path,
         ],
         capture_output=True,
         text=True,
@@ -82,26 +88,19 @@ def test_full_run(run_sunbeam):
     ### Assembly
     lfinal_contigs_fp = output_fp / "assembly" / "contigs" / "LONG-contigs.fa"
     sfinal_contigs_fp = output_fp / "assembly" / "contigs" / "SHORT-contigs.fa"
-    genes_fp = output_fp / "annotation" / "genes" / "prodigal"
 
     assert lfinal_contigs_fp.exists()
     assert lfinal_contigs_fp.stat().st_size > 0
     assert sfinal_contigs_fp.exists()
-    for ext in ["_nucl.fa", "_prot.fa", ".gff"]:
-        assert (genes_fp / f"LONG_genes{ext}").exists()
-        assert (genes_fp / f"SHORT_genes{ext}").exists()
 
     ### Annotation
-    all_samples_fp = output_fp / "annotation" / "all_samples.tsv"
-    blastn_fp = output_fp / "annotation" / "blastn" / "bacteria" / "contig" / "LONG.btf"
-    blastp_fp = output_fp / "annotation" / "blastp" / "prot" / "prodigal" / "LONG.btf"
-    blastx_fp = output_fp / "annotation" / "blastx" / "prot" / "prodigal" / "LONG.btf"
+    lkraken_report_fp = output_fp / "assembly" / "kraken" / "report" / "LONG-taxa.tsv"
 
-    assert all_samples_fp.exists()
-    assert all_samples_fp.stat().st_size > 0
+    assert lkraken_report_fp.exists()
+    assert lkraken_report_fp.stat().st_size > 0
 
     ### Coverage
-    contigs_coverage_fp = output_fp / "assembly" / "contigs_coverage.txt"
+    contigs_coverage_fp = output_fp / "assembly" / "coverage" / "contigs_coverage.txt"
 
     assert contigs_coverage_fp.exists()
     assert contigs_coverage_fp.stat().st_size > 0

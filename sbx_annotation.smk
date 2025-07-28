@@ -73,3 +73,8 @@ rule kraken2_classify_mags:
             echo "C\tA\t1\t136|136\t1:102 |:| 1:102" > {output.raw}
         fi
         """
+
+
+rule _test_kraken:
+    input:
+        expand(ASSEMBLY_FP / "kraken" / "{sample}-raw.tsv", sample=Samples.keys()),

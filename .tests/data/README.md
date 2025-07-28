@@ -1,9 +1,3 @@
-To create `.tests/dbs/`:
+The Kraken db we copied from sbx_kraken and didn't make good docs for how to make it :(
 
-```bash
-    cat raw/*.fna > .tests/dbs/bacteria.fa
-    makeblastdb -dbtype nucl -in .tests/dbs/bacteria.fa
-    makeblastdb -dbtype prot -in .tests/dbs/prot.fa
-```
-
-where `raw/*.fna` includes genomes of bacteria you want to include in the nucl database and `prot.fa` is a file containing proteins, some of which should be identified by tests.
+We still haven't figured out a good solution to making a miniature Bakta db :((
