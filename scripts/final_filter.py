@@ -1,6 +1,6 @@
 try:
     from sunbeam.bfx.parse import parse_fasta, write_fasta
-except ImportError:
+except ModuleNotFoundError:
     # For compatibility with older versions of Sunbeam
     from sunbeamlib.parse import parse_fasta, write_fasta
 
