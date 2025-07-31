@@ -24,13 +24,13 @@ def _get_blast6_defaults():
         from sunbeam.bfx.parse import BLAST6_DEFAULTS
 
         return BLAST6_DEFAULTS
-    except ImportError:
+    except ModuleNotFoundError:
         try:
             # For compatibility with older versions of Sunbeam
             from sunbeamlib.parse import BLAST6_DEFAULTS
 
             return BLAST6_DEFAULTS
-        except ImportError:
+        except ModuleNotFoundError:
             # Fallback to standard BLAST6 format
             return _DEFAULT_BLAST6_COLUMNS
 
