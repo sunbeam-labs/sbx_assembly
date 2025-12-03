@@ -1,5 +1,5 @@
 """
-Summarize stats for coverage data for each sample 
+Summarize stats for coverage data for each sample
 """
 
 import csv
