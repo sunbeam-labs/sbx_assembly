@@ -31,7 +31,7 @@ rule minimap_alignment:
         contig=ASSEMBLY_FP / "contigs" / "{sample}-contigs.fa",
         reads=expand(QC_FP / "decontam" / "{{sample}}_{rp}.fastq.gz", rp=Pairs),
     output:
-        temp(ASSEMBLY_FP / "coverage" / "minimap2" / "{sample}.sam"),
+        ASSEMBLY_FP / "coverage" / "samtools" / "{sample}.sorted.bam",
     benchmark:
         BENCHMARK_FP / "minimap_alignment_{sample}.tsv"
     log:
@@ -43,27 +43,7 @@ rule minimap_alignment:
         f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-coverage"
     shell:
         """
-        minimap2 -ax sr -t {threads} {input.contig} {input.reads} 1> {output} 2> {log}
-        """
-
-
-rule contigs_sort:
-    input:
-        ASSEMBLY_FP / "coverage" / "minimap2" / "{sample}.sam",
-    output:
-        ASSEMBLY_FP / "coverage" / "samtools" / "{sample}.sorted.bam",
-    benchmark:
-        BENCHMARK_FP / "contigs_sort_{sample}.tsv"
-    log:
-        LOG_FP / "contigs_sort_{sample}.log",
-    threads: Cfg["sbx_assembly"]["threads"]
-    conda:
-        "envs/sbx_coverage.yml"
-    container:
-        f"docker://sunbeamlabs/sbx_assembly:{SBX_ASSEMBLY_VERSION}-coverage"
-    shell:
-        """
-        samtools sort -@ {threads} -o {output} {input} > {log} 2>&1
+        minimap2 -ax sr -t {threads} {input.contig} {input.reads} | samtools sort -@ {threads} -O BAM --write-index -o {output} - 
         """
 
 
